@@ -1,6 +1,7 @@
-import React from 'react';
-import { createGlobalStyle } from 'styled-components';
-import Router from "./Router"
+import React from "react";
+import { createGlobalStyle } from "styled-components";
+import Router from "./Router";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap');
@@ -37,8 +38,8 @@ footer, header, hgroup, menu, nav, section {
 body {
 	line-height: 1;
   font-family: 'Ubuntu', sans-serif;
-  background-color: ${props => props.theme.bgColor};
-  color: ${props => props.theme.textColor};
+  background-color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.textColor};
   
 }
 ol, ul {
@@ -59,16 +60,16 @@ table {
 a{
   color:inherit;
 }
-`
+`;
 
 function App() {
-  return(
+  return (
     <>
-      <GlobalStyle/>
-      <Router/> 
+      <GlobalStyle />
+      <Router />
+      <ReactQueryDevtools initialIsOpen={true} />
     </>
-
-  )
+  );
 }
 
 export default App;
