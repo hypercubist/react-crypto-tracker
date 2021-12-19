@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
 
@@ -34,6 +33,52 @@ const Loader = styled.span`
   text-align: center;
   font-size: 30px;
   display: block;
+`;
+
+const Overview = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: repeat(3, 1fr);
+`;
+
+const OverviewItem = styled.div`
+  width: 100%;
+  height: 50px;
+  background-color: #282e46;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const OverviewTitle = styled.div`
+  font-size: 0.4rem;
+  color: lightgray;
+  opacity: 0.5;
+  margin-top: 5px;
+`;
+
+const OverviewContent = styled.div`
+  font-size: 1.4rem;
+  margin-top: 1px;
+`;
+
+const Toggle = styled.div`
+  margin-top: 5px;
+  grid-gap: 5px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+`;
+
+const ToggleItem = styled(OverviewItem)`
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  color: lightgray;
+  height: 30px;
 `;
 
 interface InfoData {
@@ -133,7 +178,36 @@ function Coin() {
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
         </Title>
       </Header>
-      {loading ? <Loader>Loading Coins...</Loader> : infoData?.name}
+      {loading ? (
+        <Loader>Loading Coin Data...</Loader>
+      ) : (
+        <>
+          <Overview>
+            <OverviewItem>
+              <OverviewTitle>RANK</OverviewTitle>
+              <OverviewContent>{infoData?.rank}</OverviewContent>
+            </OverviewItem>
+            <OverviewItem>
+              <OverviewTitle>SYMBOL</OverviewTitle>
+              <OverviewContent>{infoData?.symbol}</OverviewContent>
+            </OverviewItem>
+            <OverviewItem>
+              <OverviewTitle>PRICE</OverviewTitle>
+              <OverviewContent>
+                {`$${
+                  Math.floor((tickersData?.quotes.USD.price ?? 0) * 100) / 100
+                }`}
+              </OverviewContent>
+            </OverviewItem>
+          </Overview>
+          <Toggle>
+            <ToggleItem>
+              <Link to={{ pathname: `/${infoData?.name}/chart` }}>CHART</Link>
+            </ToggleItem>
+            <ToggleItem>PRICE</ToggleItem>
+          </Toggle>
+        </>
+      )}
     </Container>
   );
 }
