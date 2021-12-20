@@ -1,7 +1,9 @@
 import { useQuery } from "react-query";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, Route, Switch, useLocation, useParams, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
+import Chart from "./Chart";
+import Price from "./Price";
 
 interface RouteParams {
   coinId: string;
@@ -73,12 +75,13 @@ const Toggle = styled.div`
   grid-template-columns: 1fr 1fr;
 `;
 
-const ToggleItem = styled(OverviewItem)`
+const ToggleItem = styled(OverviewItem)<{isActive:boolean}>`
   font-size: 1rem;
   display: flex;
   justify-content: center;
   color: lightgray;
   height: 30px;
+  color: ${props => props.isActive ? props.theme.accentColor : "lightgray"};
 `;
 
 interface InfoData {
@@ -151,8 +154,14 @@ function Coin() {
   );
   const { isLoading: tickersLoading, data: tickersData } = useQuery<PriceData>(
     ["tickers", coinId],
-    () => fetchCoinTickers(coinId)
+    () => fetchCoinTickers(coinId),
+    {
+      refetchInterval: 10000,
+    }
   );
+  const priceMatch = useRouteMatch("/:coinId/price");
+  const chartMatch = useRouteMatch("/:coinId/chart"); 
+
   // const [loading, setLoading] = useState(true);
   // const [info, setInfo] = useState<InfoData>();
   // const [price, setPriceInfo] = useState<PriceData>();
@@ -201,11 +210,21 @@ function Coin() {
             </OverviewItem>
           </Overview>
           <Toggle>
-            <ToggleItem>
-              <Link to={{ pathname: `/${infoData?.name}/chart` }}>CHART</Link>
+            <ToggleItem isActive={chartMatch !== null}>
+              <Link to={{ pathname: `/${infoData?.id}/chart` }}>CHART</Link>
             </ToggleItem>
-            <ToggleItem>PRICE</ToggleItem>
+            <ToggleItem isActive={priceMatch !== null}>
+              <Link to={{ pathname: `/${infoData?.id}/price` }}>PRICE</Link>
+            </ToggleItem>
           </Toggle>
+          <Switch>
+            <Route path={`/:coinId/price`}>
+              <Price/>
+            </Route>
+            <Route path={`/:coinId/chart`}>
+              <Chart coinId={coinId}/>
+            </Route>
+          </Switch>
         </>
       )}
     </Container>
